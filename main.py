@@ -4,10 +4,10 @@ from kivy.config import Config
 from kivymd.theming import ThemeManager
 from flask import Flask as FlaskApp
 from os import access as file_exists
-from os import getcwd as get_current_dir
 from os import F_OK as file_exists_param
 from os.path import join as join_path
 from os.path import isdir as is_dir
+from os import name as os_type
 from flask import request as req
 from flask_cors import CORS as cors_for_flask
 from threading import Thread as NewThread
@@ -22,12 +22,28 @@ class Container(BoxLayout):
         self.is_server_on = False
         self.port = 5000
         self.host = '127.0.0.1'
-        self.path = get_current_dir()
+        self.path = '/storage/emulated/0/'
+        if os_type == 'nt':
+            from os import getcwd as get_current_dir
+            get_current_dir()
         self.app = None
         self.can_shutdown = False
+        self.read_config()
         super().__init__(**kwargs)
 
-    def render(self, filename):
+    def read_config(self):
+        if file_exists('androidwebserver.txt', file_exists_param):
+            config = self.fastread('androidwebserver.txt').split('\n')
+            self.port = int(config[0])
+            self.host = str(config[1])
+            self.path = str(config[2])
+
+    def fastwrite(self, filename, content):
+        temp_file = open(filename, 'w')
+        temp_file.write(content)
+        temp_file.close()
+
+    def fastread(self, filename):
         temp_file = open(filename, 'r')
         read = temp_file.read()
         temp_file.close()
@@ -43,9 +59,9 @@ class Container(BoxLayout):
     def error404(self):
         error_404_path = join_path(self.path, '404')
         if file_exists(error_404_path + '.html', file_exists_param):
-            return self.render(join_path(self.path, '404.html')), 404
+            return self.fastread(join_path(self.path, '404.html')), 404
         elif file_exists(error_404_path + '.htm', file_exists_param):
-            return self.render(join_path(self.path, '404.htm')), 404
+            return self.fastread(join_path(self.path, '404.htm')), 404
         else:
             return 'Error404', 404
 
@@ -78,9 +94,9 @@ class Container(BoxLayout):
             def main_index():
                 index_path = join_path(self.path, 'index')
                 if file_exists(index_path + '.html', file_exists_param):
-                    return self.render(join_path(self.path, 'index.html'))
+                    return self.fastread(join_path(self.path, 'index.html'))
                 elif file_exists(index_path + '.htm', file_exists_param):
-                    return self.render(join_path(self.path, 'index.htm'))
+                    return self.fastread(join_path(self.path, 'index.htm'))
                 else:
                     return self.error404()
 
@@ -90,15 +106,15 @@ class Container(BoxLayout):
                     index_path = join_path(self.path, url, 'index')
                     if file_exists(index_path + '.html', file_exists_param):
                         print(join_path(self.path, url, 'index.html'))
-                        return self.render(join_path(self.path, url, 'index.html'))
+                        return self.fastread(join_path(self.path, url, 'index.html'))
                     elif file_exists(index_path + '.htm', file_exists_param):
-                        return self.render(join_path(self.path, url, 'index.htm'))
+                        return self.fastread(join_path(self.path, url, 'index.htm'))
                     else:
                         return self.error404()
                 elif url[-5:] == '.html' or url[-4:] == '.htm':
                     joined = join_path(self.path, url)
                     if file_exists(joined, file_exists_param):
-                        return self.render(joined)
+                        return self.fastread(joined)
                     else:
                         return self.error404()
                 else:
