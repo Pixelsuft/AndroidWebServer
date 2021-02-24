@@ -1,0 +1,75 @@
+<Container>:
+    padding: [20, 20, 20, 20]
+    rows: 1
+    cols: 1
+    orientation: 'vertical'
+    ip_label: ip_label
+    ip_text: ip_text
+    port_label: port_label
+    port_text: port_text
+    path_label: path_label
+    path_text: path_text
+    runserver_btn: runserver_btn
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [0, 50, 0, 0]
+        MDLabel:
+            font_size: '25sp'
+            halign: 'center'
+            valign: 'top'
+            text_size: root.width, root.height
+            id: ip_label
+            text: 'IP Address: '
+        MDTextField:
+            id: ip_text
+            font_size: '25sp'
+            valign: 'top'
+            halign: 'left'
+            text: root.host
+            text_size: root.width, root.height
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [0, 50, 0, 0]
+        MDLabel:
+            font_size: '25sp'
+            halign: 'center'
+            valign: 'top'
+            text_size: root.width, root.height
+            id: port_label
+            text: 'PORT: '
+        MDTextField:
+            id: port_text
+            valign: 'center'
+            text_size: root.width, root.height
+            font_size: '25sp'
+            halign: 'left'
+            input_type: 'number'
+            input_filter: 'int'
+            text: str(root.port)
+    BoxLayout:
+        padding: [0, 50, 0, 0]
+        orientation: 'vertical'
+        MDLabel:
+            font_size: '25sp'
+            halign: 'center'
+            valign: 'bottom'
+            text_size: root.width, root.height
+            id: path_label
+            text: 'PATH: '
+        MDTextField:
+            id: path_text
+            valign: 'bottom'
+            font_size: '25sp'
+            halign: 'left'
+            text_size: root.width, root.height
+            text: root.path
+    BoxLayout:
+        padding: [int(root.width / 2) - 90, 0, 0, 20]
+        MDRaisedButton:
+            id: runserver_btn
+            valign: 'bottom'
+            halign: 'center'
+            font_size: '25sp'
+            text: 'Run Server!'
+            text_size: root.width, None
+            on_release: root.toggle_server()
